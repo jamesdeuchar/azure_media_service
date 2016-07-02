@@ -3,8 +3,12 @@ module AzureMediaService
 
     class << self
 
-      def create(request, channel_id, name, description='null', manifest_name='null', locator_id=nil, archive_window='PT6H')
+      def create(request, channel_id, name, description='null', manifest_name='null', locator_id=nil, duration=nil)
         begin
+          duration = duration || 12
+          raise "Duration is not an integer" unless duration.kind_of? Integer
+          raise "Duration must be between 1 & 25" unless duration > 0 && duration <= 25 
+          archive_window = "PT#{duration}H"
           policy   = AccessPolicy.create(request, 'Policy', 5256000, 1)
           asset    = Asset.create(request, name)
           locators = Locator.create(request, policy['Id'], asset['Id'], 2, locator_id)
@@ -21,7 +25,6 @@ module AzureMediaService
           }
           puts "INFO: Creating program '#{name}'..."
           program = self.create_response(request, request.post('Programs', post_body))
-
           return program
         rescue => e
           puts "ERROR: Exception creating program #{name}: #{e.message} #{e.backtrace}"

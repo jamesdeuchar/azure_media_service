@@ -13,8 +13,8 @@ module AzureMediaService
       
     end
 
-    def create_program(name, description=nil, manifest_name=nil, locator_id=nil)
-      Program.create(@request, self['Id'], name, description, manifest_name, locator_id)
+    def create_program(name, description=nil, manifest_name=nil, locator_id=nil, duration=nil)
+      Program.create(@request, self['Id'], name, description, manifest_name, locator_id, duration)
     end
       
     def programs

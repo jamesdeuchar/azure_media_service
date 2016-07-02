@@ -68,9 +68,9 @@ module AzureMediaService
     end
 
     def get(method, klass, id=nil)
+      results = []
       if id.nil?
         res = @request.get(method)
-        results = []
         if res["d"]
           res["d"]["results"].each do |a|
             results << klass.new(@request, a)
