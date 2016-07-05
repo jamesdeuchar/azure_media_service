@@ -5,10 +5,8 @@ module AzureMediaService
 
       def create(request, channel_id, name, description='null', manifest_name='null', locator_id=nil, duration=nil)
         begin
-          duration = duration || 12
-          raise "Duration is not an integer" unless duration.kind_of? Integer
-          raise "Duration must be between 1 & 25" unless duration > 0 && duration <= 25 
-          archive_window = "PT#{duration}H"
+          duration = duration || 'PT12H'
+          raise "Duration '#{duration}' is in expected ISO format" unless duration.match(/^PT\d+/)
           policy   = AccessPolicy.create(request, 'Policy', 5256000, 1)
           asset    = Asset.create(request, name)
           locators = Locator.create(request, policy['Id'], asset['Id'], 2, locator_id)
@@ -18,7 +16,7 @@ module AzureMediaService
             "Name"                => name,
             "Description"         => description,
             "ManifestName"        => manifest_name,
-            "ArchiveWindowLength" => archive_window,
+            "ArchiveWindowLength" => duration,
             "Created"             => "0001-01-01T00:00:00",
             "LastModified"        => "0001-01-01T00:00:00",
             "State"               => 'Creating'
