@@ -12,7 +12,8 @@ module AzureMediaService
 
       def create(request, name)
         post_body = { "Name" => name }
-        create_response(request, request.post("Assets", post_body))
+        asset = create_response(request, request.post("Assets", post_body))
+        return asset
       end
 
       def get(request, asset_id=nil)
@@ -39,7 +40,7 @@ module AzureMediaService
     def delete
       policy_ids = Array.new
       self.locators.each do |locator|
-        begin 
+        begin
           policy_ids << locator['AccessPolicyId']
           locator.delete
         rescue => e
@@ -55,14 +56,14 @@ module AzureMediaService
         end
       end
 
-      begin 
+      begin
         res = @request.delete("Assets('#{self.Id}')")
       rescue => e
         puts "ERROR: Failed to delete asset '#{self.Id}': #{e.message}"
       end
       res
     end
-    
+
     def locators
       locators = []
       url = "Assets('#{CGI.escape(self.Id)}')/Locators"
@@ -72,7 +73,7 @@ module AzureMediaService
       end
       locators
     end
-    
+
     def files
       files = []
       if files.empty?
@@ -93,7 +94,7 @@ module AzureMediaService
         url = _uri.path.gsub('/api/','')
         res = @request.get(url)
         res["d"]["results"].each do |v|
-          @content_keys << ContentKey.new(v)
+          @content_keys << ContentKey.new(@request, v)
         end
       end
       @content_keys

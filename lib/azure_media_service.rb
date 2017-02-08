@@ -16,26 +16,29 @@ require 'builder/xmlmarkup'
 
 module AzureMediaService
 
-  class Account 
+  class Account
 
     def initialize(id, key, proxy)
       @request ||= Request.new(client_id:id, client_secret:key, proxy_url: proxy)
     end
 
     def assets(asset_id=nil)
-      get_object('Assets', Asset, asset_id)      
+      get_object('Assets', Asset, asset_id)
     end
     def channels(channel_id=nil)
       get_object('Channels', Channel, channel_id)
     end
     def locators(locator_id=nil)
-      get_object('Locators', Locator, locator_id)      
+      get_object('Locators', Locator, locator_id)
     end
     def programs(program_id=nil)
-      get_object('Programs', Program, program_id)      
+      get_object('Programs', Program, program_id)
     end
     def streamingendpoints(se_id=nil)
-      get_object('StreamingEndpoints', StreamingEndpoint, se_id)      
+      get_object('StreamingEndpoints', StreamingEndpoint, se_id)
+    end
+    def contentkey(ck_id=nil)
+      get_object('ContentKeys', ContentKey, ck_id)
     end
     def operation(op_id)
       unless op_id.nil?
@@ -45,9 +48,9 @@ module AzureMediaService
     end
 
     private
-    
+
     def get_object(obj_type, obj_klass, obj_id=nil)
-      if obj_id.nil? 
+      if obj_id.nil?
         return get(obj_type, obj_klass, obj_id)
       else
         if obj_id.match(/#{Config::GUID_PREFIX[obj_type]}/)
@@ -56,7 +59,7 @@ module AzureMediaService
           get(obj_type, obj_klass, nil).each do |obj|
             return obj if obj['Name'] == obj_id
           end
-          puts "ERROR: #{obj_klass} '#{obj_id} not found" 
+          puts "ERROR: #{obj_klass} '#{obj_id} not found"
         end
       end
       return nil

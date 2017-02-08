@@ -2,12 +2,12 @@ module AzureMediaService
   class ContentKeyAuthorizationPolicy < Model::Base
 
     class << self
-      def create(name)
-        create_response(service.post("ContentKeyAuthorizationPolicies", {Name: name}))
+      def create(request, name)
+        create_response(request, request.post("ContentKeyAuthorizationPolicies", {Name: name}))
       end
 
-      def get(content_key_authorization_policy_id=nil)
-        service.get("ContentKeyAuthorizationPolicies", ContentKeyAuthorizationPolicy, content_key_authorization_policy_id)
+      def get(request, content_key_authorization_policy_id=nil)
+        request.get("ContentKeyAuthorizationPolicies('#{CGI.escape(content_key_authorization_policy_id)}')" )
       end
     end
 

@@ -14,7 +14,7 @@ module AzureMediaService
     }
 
     class << self
-      def create(name:, key_delivery_type:, key_delivery_configuration: nil, restrictions:)
+      def create(request ,name, key_delivery_type, key_delivery_configuration, restrictions)
         post_body = {
           "Name" => name,
           "KeyDeliveryType" => key_delivery_type,
@@ -23,11 +23,10 @@ module AzureMediaService
         if key_delivery_configuration
           post_body["KeyDeliveryConfiguration"] = key_delivery_configuration
         end
-        create_response(service.post("ContentKeyAuthorizationPolicyOptions", post_body))
+        create_response(request, request.post("ContentKeyAuthorizationPolicyOptions", post_body))
       end
-
-      def get(content_key_authorization_policy_option_id=nil)
-        service.get("ContentKeyAuthorizationPolicyOptions", ContentKeyAuthorizationPolicyOption, content_key_authorization_policy_option_id)
+      def get(request, content_key_authorization_policy_option_id=nil)
+        request.get("ContentKeyAuthorizationPolicyOptions('#{CGI.escape(content_key_authorization_policy_option_id)}')" )
       end
     end
 

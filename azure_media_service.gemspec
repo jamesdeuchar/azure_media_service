@@ -27,4 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "faraday_middleware"
   spec.add_dependency "mime-types"
   spec.add_dependency "builder"
+  spec.add_dependency "json"
 end

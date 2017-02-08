@@ -30,23 +30,39 @@ module AzureMediaService
 
 
     class << self
-      def create(name:, protocol:, policy_type:, configuration:)
+      def create_hls_aes_only(request, key_delivery_base_url)
         body = {
-          "Name" => name,
-          "AssetDeliveryProtocol" => protocol,
-          "AssetDeliveryPolicyType" => policy_type,
-          "AssetDeliveryConfiguration" => configuration
+          "Name" => 'AssetDeliveryPolicy EnvelopeEncryption (HLS)',
+          "AssetDeliveryProtocol" => 0x4,
+          "AssetDeliveryPolicyType" => 3,
+          "AssetDeliveryConfiguration" => [{ Key: 2, Value: key_delivery_base_url}].to_json
         }
-        create_response(service.post("AssetDeliveryPolicies", body))
+        create_response(request, request.post("AssetDeliveryPolicies", body))
       end
 
-      def get(asset_delivery_policy_id=nil)
-        service.get("AssetDeliveryPolicies", AssetDeliveryPolicy, asset_delivery_policy_id)
+      def get(request, asset_delivery_policy_id=nil)
+        if asset_delivery_policy_id.nil?
+          res = request.get('AssetDeliveryPolicies')
+          results = []
+          if res["d"]
+            res["d"]["results"].each do |adp|
+              results << AssetDeliveryPolicy.new(request, adp)
+            end
+          end
+        else
+          res = request.get("AssetDeliveryPolicies('#{asset_delivery_policy_id}')")
+          results = nil
+          if res["d"]
+            results = AssetDeliveryPolicy.new(request, res["d"])
+          end
+        end
+        results
       end
+
     end
 
     def delete
-      begin 
+      begin
         res = @request.delete("AssetDeliveryPolicies('#{self.Id}')")
       rescue => e
         raise MediaServiceError.new(e.message)

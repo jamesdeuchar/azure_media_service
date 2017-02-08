@@ -13,8 +13,8 @@ module AzureMediaService
       
     end
 
-    def create_program(name, description=nil, manifest_name=nil, locator_id=nil, duration=nil)
-      Program.create(@request, self['Id'], name, description, manifest_name, locator_id, duration)
+    def create_program(name, description=nil, manifest_name=nil, locator_id=nil, duration=nil, key_acquisition_domain=nil)
+      Program.create(@request, self['Id'], name, description, manifest_name, locator_id, duration, key_acquisition_domain)
     end
       
     def programs
@@ -39,44 +39,22 @@ module AzureMediaService
     end
     
     def start
-      begin 
-        raise 'Channel not in stopped state - start not attempted' if self.State != 'Stopped'
-        puts "INFO: Starting channel #{self.Name}"
-        res = @request.post("Channels('#{CGI.escape(self.Id)}')/Start", {})
-      rescue => e
-        puts "ERROR: Failed to start channel '#{self.Name}': #{e.message}"
-      end
-      res
+      raise 'Channel not in stopped state - start not attempted' if self.State != 'Stopped'
+      res = @request.post("Channels('#{CGI.escape(self.Id)}')/Start", {})
     end
 
     def stop
-      begin 
-        raise 'Channel not in running state - stop not attempted' if self.State != 'Running'
-        puts "INFO: Stopping channel #{self.Name}"
-        res = @request.post("Channels('#{CGI.escape(self.Id)}')/Stop", {})
-      rescue => e
-        puts "ERROR: Failed to stop channel '#{self.Name}': #{e.message}"
-      end
-      res
+      raise 'Channel not in running state - stop not attempted' if self.State != 'Running'
+      res = @request.post("Channels('#{CGI.escape(self.Id)}')/Stop", {})
     end
 
     def reset
-      begin 
-        res = @request.post("Channels('#{CGI.escape(self.Id)}')/Reset", {})
-      rescue => e
-        puts "ERROR: Failed to reset channel '#{self.Name}': #{e.message}"
-      end
-      res
+      raise 'Channel not in running state - reset not attempted' if self.State != 'Running'
+      res = @request.post("Channels('#{CGI.escape(self.Id)}')/Reset", {})
     end
     
     def delete
-      begin 
-        res = @request.delete("Channels('#{self.Id}')")
-        clear_cache
-      rescue => e
-        puts "ERROR: Failed to delete channel '#{self.Name}': #{e.message}"
-      end
-      res
+      res = @request.delete("Channels('#{self.Id}')")
     end
 
   end
