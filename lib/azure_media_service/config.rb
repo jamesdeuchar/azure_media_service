@@ -6,11 +6,11 @@ module AzureMediaService
     MEDIA_URI = "https://media.windows.net/api/"
     TOKEN_URI = "https://wamsprodglobal001acs.accesscontrol.windows.net/v2/OAuth2-13"
 
-    GUID_PREFIX = { 'Channels'   => 'nb:chid:UUID',
-                    'Programs'   => 'nb:pgid:UUID',
-                    'Locators'   => 'nb:lid:UUID',
-                    'Assets'     => 'nb:cid:UUID',
-                    'Operations' => 'nb:opid:UUID',
+    GUID_PREFIX = { 'Channel'   => 'nb:chid:UUID',
+                    'Program'   => 'nb:pgid:UUID',
+                    'Locator'   => 'nb:lid:UUID',
+                    'Asset'     => 'nb:cid:UUID',
+                    'Operation' => 'nb:opid:UUID',
                     'ContentKey' => 'nb:kid:UUID',
                     'ContentKeyAuthorizationPolicyOption' => 'nb:ckpoid:UUID',
                     'AssetDeliveryPolicy' => 'nb:adpid:UUID' }

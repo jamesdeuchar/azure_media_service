@@ -11,15 +11,17 @@ module AzureMediaService
       end
     end
 
-    def option_link(options)
-      @request.post("ContentKeyAuthorizationPolicies('#{CGI.escape(self.Id)}')/$links/Options", {uri: options.__metadata['uri']})
+    def link_options(options)
+      @request.post("ContentKeyAuthorizationPolicies('#{CGI.escape(self.Id)}')/$links/Options",
+                    {uri: options.uri('ContentKeyAuthorizationPolicyOptions')},
+                    {"DataServiceVersion" => "1.0;NetFx"})
     end
 
     def delete
       begin 
         res = @request.delete("ContentKeyAuthorizationPolicies('#{self.Id}')")
       rescue => e
-        raise MediaServiceError.new(e.message)
+        raise MediaServiceError.new("Failed to delete content key authorization policy '#{self.Id}' - #{e.message}")
       end
       res
     end

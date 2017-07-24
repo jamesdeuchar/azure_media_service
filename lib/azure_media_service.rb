@@ -18,79 +18,37 @@ module AzureMediaService
 
   class Account
 
-    def initialize(id, key, proxy)
+    def initialize(id, key, proxy=nil)
       @request ||= Request.new(client_id:id, client_secret:key, proxy_url: proxy)
     end
 
     def assets(asset_id=nil)
-      get_object('Assets', Asset, asset_id)
+      Asset.get(@request, asset_id)
+    end
+    def create_channel(name, options={})
+      Channel.create(@request, name, options)
     end
     def channels(channel_id=nil)
-      get_object('Channels', Channel, channel_id)
+      Channel.get(@request, channel_id)
     end
     def locators(locator_id=nil)
-      get_object('Locators', Locator, locator_id)
+      Locator.get(@request, locator_id)
     end
     def programs(program_id=nil)
-      get_object('Programs', Program, program_id)
+      Program.get(@request, program_id)
+    end
+    def create_streamingendpoint(name, options)
+      StreamingEndpoint.create(@request, name, options)
     end
     def streamingendpoints(se_id=nil)
-      get_object('StreamingEndpoints', StreamingEndpoint, se_id)
+      StreamingEndpoint.get(@request, se_id)
     end
     def contentkey(ck_id=nil)
-      get_object('ContentKeys', ContentKey, ck_id)
+      ContentKey.get(@request, ck_id)
     end
     def operation(op_id)
-      unless op_id.nil?
-        return get_object('Operations', Operation, op_id)
-      end
-      return nil
-    end
-
-    private
-
-    def get_object(obj_type, obj_klass, obj_id=nil)
-      if obj_id.nil?
-        return get(obj_type, obj_klass, obj_id)
-      else
-        if obj_id.match(/#{Config::GUID_PREFIX[obj_type]}/)
-          return get(obj_type, obj_klass, obj_id)
-        else
-          get(obj_type, obj_klass, nil).each do |obj|
-            return obj if obj['Name'] == obj_id
-          end
-          puts "ERROR: #{obj_klass} '#{obj_id} not found"
-        end
-      end
-      return nil
-    end
-
-    def post_object(obj_klass)
-      obj_klass.new(@request, res["d"])
-      post(obj_type, obj_klass)
-    end
-
-    def get(method, klass, id=nil)
-      results = []
-      if id.nil?
-        res = @request.get(method)
-        if res["d"]
-          res["d"]["results"].each do |a|
-            results << klass.new(@request, a)
-          end
-        end
-      else
-        res = @request.get("#{method}('#{id}')")
-        results = nil
-        if res["d"]
-          results = klass.new(@request, res["d"])
-        end
-      end
-      results
-    end
-
-    def post(method, body)
-      @request.post(method, body)
+      return nil if op_id.nil?
+      Operation.get(@request, op_id)
     end
 
   end

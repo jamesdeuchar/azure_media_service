@@ -1,6 +1,6 @@
 module AzureMediaService
   class Locator < Model::Base
-
+    
     class << self
       def create(request, policy_id, asset_id, type, id=nil)
         post_body = {
@@ -18,7 +18,7 @@ module AzureMediaService
       begin 
         res = @request.delete("Locators('#{self.Id}')")
       rescue => e
-        puts "ERROR: Failed to delete locator '#{self.Id}': #{e.message}"
+        raise MediaServiceError.new("Failed to delete locator '#{self.Id}' - #{e.message}")
       end
       res
     end

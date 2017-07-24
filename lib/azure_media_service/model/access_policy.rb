@@ -1,6 +1,6 @@
 module AzureMediaService
   class AccessPolicy < Model::Base
-
+    
     class << self
       def create(request, name, duration_minutes, permission)
         post_body = {
@@ -12,13 +12,13 @@ module AzureMediaService
       end
     end
 
+    
     def delete
-      begin 
-        res = @request.delete("AccessPolicies('#{self.Id}')")
+      begin
+        @request.delete("AccessPolicies('#{self.Id}')")
       rescue => e
-        raise MediaServiceError.new(e.message)
+        raise MediaServiceError.new("Failed to delete access policy '#{self.Id} - #{e.message}")
       end
-      res
     end
 
   end

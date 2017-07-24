@@ -40,27 +40,8 @@ module AzureMediaService
         create_response(request, request.post("AssetDeliveryPolicies", body))
       end
 
-      def get(request, asset_delivery_policy_id=nil)
-        if asset_delivery_policy_id.nil?
-          res = request.get('AssetDeliveryPolicies')
-          results = []
-          if res["d"]
-            res["d"]["results"].each do |adp|
-              results << AssetDeliveryPolicy.new(request, adp)
-            end
-          end
-        else
-          res = request.get("AssetDeliveryPolicies('#{asset_delivery_policy_id}')")
-          results = nil
-          if res["d"]
-            results = AssetDeliveryPolicy.new(request, res["d"])
-          end
-        end
-        results
-      end
-
     end
-
+    
     def delete
       begin
         res = @request.delete("AssetDeliveryPolicies('#{self.Id}')")

@@ -1,6 +1,6 @@
 module AzureMediaService
   class ContentKeyAuthorizationPolicyOption < Model::Base
-
+    
     KeyDeliveryTypes = {
       None:             0,
       PlayReadyLicense: 1,
@@ -18,7 +18,7 @@ module AzureMediaService
         post_body = {
           "Name" => name,
           "KeyDeliveryType" => key_delivery_type,
-          "Restrictions" => {"results" => restrictions}
+          "Restrictions" => restrictions
         }
         if key_delivery_configuration
           post_body["KeyDeliveryConfiguration"] = key_delivery_configuration
@@ -34,7 +34,7 @@ module AzureMediaService
       begin 
         res = @request.delete("ContentKeyAuthorizationPolicyOptions('#{self.Id}')")
       rescue => e
-        raise MediaServiceError.new(e.message)
+        raise MediaServiceError.new("Failed to delete content key authorization policy option '#{self.Id}' - #{e.message}")
       end
       res
     end
