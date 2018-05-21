@@ -139,19 +139,19 @@ module AzureMediaService
     private
       def build_config(config)
         @config = config || {}
-        # @config[:mediaURI] = "https://media.windows.net/API/"
-        @config[:mediaURI] = Config::MEDIA_URI
-        @config[:tokenURI] = Config::TOKEN_URI
+        @config[:tenant_domain] ||= ''
+        @config[:account] ||= ''
         @config[:client_id] ||= ''
         @config[:client_secret] ||= ''
+        @config[:mediaURI] = Config::MEDIA_URI % {account: @config[:account_name]}
+        @config[:tokenURI] = Config::TOKEN_URI % {tenant: @config[:tenant_domain]}
         @config[:proxy_url] ||= ''
-      
         #;odata=verbose
         @default_headers = {
           "Content-Type"          => "application/json",
           "Accept"                => "application/json",
-          "DataServiceVersion"    => "3.0;NetF",
-          "MaxDataServiceVersion" => "3.0;NetFx",
+          "DataServiceVersion"    => "3.0",
+          "MaxDataServiceVersion" => "3.0",
           "x-ms-version"          => "2.15"
         }
       end
@@ -170,25 +170,34 @@ module AzureMediaService
           end
         end
       end
+      def conn_mp(url)
+        conn = Faraday::Connection.new(:url => url, proxy: @config[:proxy_url], :ssl => {:verify => false} ) do |builder|
+          builder.request :multipart
+          builder.headers['content-type'] = 'multipart/form-data'
+          builder.use FaradayMiddleware::ParseJson, :content_type => /\bjson$/
+          builder.adapter Faraday.default_adapter
+          if block_given?
+            yield(builder)
+          end
+        end
+      end
       def setToken
-        res = conn(@config[:tokenURI]).post do |req|
+        res = conn_mp(@config[:tokenURI]).post do |req|
           req.body = {
-            client_id: @config[:client_id], 
+            grant_type:    'client_credentials',
+            client_id:     @config[:client_id],
             client_secret: @config[:client_secret],
-            grant_type: 'client_credentials',
-            scope: 'urn:WindowsAzureMediaServices'
+            resource:      'https://rest.media.azure.net'
           }
         end
         @access_token = res.body["access_token"]
         @token_expires = Time.now.to_i + res.body["expires_in"].to_i
       end
-
       def token_expire?
         return true unless @access_token 
         return true if Time.now.to_i >= @token_expires
         return false
       end
-    
       def media_service_error_response(response)
         raise MediaServiceError.new("#{response.body['odata.error']['code']}: #{response.body['odata.error']['message']['value']}")
       end
