@@ -18,8 +18,9 @@ module AzureMediaService
 
   class Account
 
-    def initialize(tenant, account, id, key, proxy=nil)
+    def initialize(tenant, region, account, id, key, proxy=nil)
       @request ||= Request.new(tenant_domain: tenant,
+                               region: region,
                                account_name: account, 
                                client_id:id, 
                                client_secret:key, 

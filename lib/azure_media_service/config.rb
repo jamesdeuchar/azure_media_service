@@ -3,7 +3,7 @@ module AzureMediaService
     UPLOAD_LIMIT_SIZE = 4194304 # 4MB
     READ_BUFFER_SIZE  = 4000000
 
-    MEDIA_URI = "https://%{account}.restv2.westeurope.media.azure.net/api/"
+    MEDIA_URI = "https://%{account}.restv2.%{region}.media.azure.net/api/"
     TOKEN_URI = "https://login.microsoftonline.com/%{tenant}/oauth2/token"
 
     GUID_PREFIX = { 'Channel'   => 'nb:chid:UUID',

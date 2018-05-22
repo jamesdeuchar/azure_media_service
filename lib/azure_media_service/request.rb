@@ -140,10 +140,11 @@ module AzureMediaService
       def build_config(config)
         @config = config || {}
         @config[:tenant_domain] ||= ''
+        @config[:region] ||= ''
         @config[:account] ||= ''
         @config[:client_id] ||= ''
         @config[:client_secret] ||= ''
-        @config[:mediaURI] = Config::MEDIA_URI % {account: @config[:account_name]}
+        @config[:mediaURI] = Config::MEDIA_URI % {account: @config[:account_name], region: @config[:region]}
         @config[:tokenURI] = Config::TOKEN_URI % {tenant: @config[:tenant_domain]}
         @config[:proxy_url] ||= ''
         #;odata=verbose
